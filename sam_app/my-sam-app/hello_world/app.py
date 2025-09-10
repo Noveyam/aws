@@ -3,7 +3,7 @@ def lambda_handler(event, context):
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Static Profile Page</title>
+    <title>Novey Cloud</title>
 </head>
 <body>
     <h1>Welcome to Django!</h1>
@@ -11,7 +11,7 @@ def lambda_handler(event, context):
 </body>
 </html>
     """
-
+    
     return {
         "statusCode": 200,
         "headers": {
