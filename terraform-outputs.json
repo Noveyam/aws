@@ -1,0 +1,99 @@
+{
+  "acm_certificate_arn": {
+    "sensitive": false,
+    "type": "string",
+    "value": "arn:aws:acm:us-east-1:766158721264:certificate/1d7b5f6c-98ae-4b17-b07f-b5448b585bee"
+  },
+  "acm_certificate_domain_validation_options": {
+    "sensitive": true,
+    "type": [
+      "set",
+      [
+        "object",
+        {
+          "domain_name": "string",
+          "resource_record_name": "string",
+          "resource_record_type": "string",
+          "resource_record_value": "string"
+        }
+      ]
+    ],
+    "value": [
+      {
+        "domain_name": "*.noveycloud.com",
+        "resource_record_name": "_7abba94f84e7e604e579802a1e2c5006.noveycloud.com.",
+        "resource_record_type": "CNAME",
+        "resource_record_value": "_996259b4632bf658f539b6b685983045.xlfgrmvvlj.acm-validations.aws."
+      },
+      {
+        "domain_name": "noveycloud.com",
+        "resource_record_name": "_7abba94f84e7e604e579802a1e2c5006.noveycloud.com.",
+        "resource_record_type": "CNAME",
+        "resource_record_value": "_996259b4632bf658f539b6b685983045.xlfgrmvvlj.acm-validations.aws."
+      }
+    ]
+  },
+  "acm_certificate_status": {
+    "sensitive": false,
+    "type": "string",
+    "value": "PENDING_VALIDATION"
+  },
+  "cloudfront_distribution_id": {
+    "sensitive": false,
+    "type": "string",
+    "value": "E1D5NO0HB8P7QP"
+  },
+  "cloudfront_domain_name": {
+    "sensitive": false,
+    "type": "string",
+    "value": "dbfw19n4wqea5.cloudfront.net"
+  },
+  "deployment_policy_arn": {
+    "sensitive": false,
+    "type": "string",
+    "value": "arn:aws:iam::766158721264:policy/noveycloud-resume-website-deployment-policy"
+  },
+  "health_check_id": {
+    "sensitive": false,
+    "type": "string",
+    "value": "a3427ecc-2afa-414f-8789-36eeb475ec75"
+  },
+  "route53_name_servers": {
+    "sensitive": false,
+    "type": [
+      "list",
+      "string"
+    ],
+    "value": [
+      "ns-1400.awsdns-47.org",
+      "ns-1944.awsdns-51.co.uk",
+      "ns-343.awsdns-42.com",
+      "ns-754.awsdns-30.net"
+    ]
+  },
+  "route53_zone_id": {
+    "sensitive": false,
+    "type": "string",
+    "value": "Z0756127155MZ0VTLU0BJ"
+  },
+  "s3_bucket_name": {
+    "sensitive": false,
+    "type": "string",
+    "value": "noveycloud-resume-website"
+  },
+  "s3_bucket_website_endpoint": {
+    "sensitive": false,
+    "type": "string",
+    "value": "noveycloud-resume-website.s3-website-us-east-1.amazonaws.com"
+  },
+  "website_url": {
+    "sensitive": false,
+    "type": "string",
+    "value": "https://noveycloud.com"
+  },
+  "www_website_url": {
+    "sensitive": false,
+    "type": "string",
+    "value": "https://www.noveycloud.com"
+  }
+}

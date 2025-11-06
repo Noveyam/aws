@@ -1,0 +1,99 @@
+{
+  "environments": {
+    "dev": {
+      "domain_name": "dev.noveycloud.com",
+      "bucket_name": "noveycloud-resume-website-dev",
+      "aws_region": "us-east-1",
+      "environment": "dev",
+      "create_deployment_user": true,
+      "enable_health_check": false,
+      "tags": {
+        "Project": "Resume Website",
+        "Environment": "dev",
+        "ManagedBy": "Terraform",
+        "Owner": "noveycloud"
+      }
+    },
+    "staging": {
+      "domain_name": "staging.noveycloud.com",
+      "bucket_name": "noveycloud-resume-website-staging",
+      "aws_region": "us-east-1",
+      "environment": "staging",
+      "create_deployment_user": true,
+      "enable_health_check": true,
+      "tags": {
+        "Project": "Resume Website",
+        "Environment": "staging",
+        "ManagedBy": "Terraform",
+        "Owner": "noveycloud"
+      }
+    },
+    "prod": {
+      "domain_name": "noveycloud.com",
+      "bucket_name": "noveycloud-resume-website",
+      "aws_region": "us-east-1",
+      "environment": "prod",
+      "create_deployment_user": false,
+      "enable_health_check": true,
+      "tags": {
+        "Project": "Resume Website",
+        "Environment": "prod",
+        "ManagedBy": "Terraform",
+        "Owner": "noveycloud"
+      }
+    }
+  },
+  "deployment_settings": {
+    "backup_retention_days": 30,
+    "max_backups": 10,
+    "invalidation_timeout": 300,
+    "sync_delete": true,
+    "validate_before_deploy": true,
+    "create_backup_before_deploy": true
+  },
+  "file_settings": {
+    "html": {
+      "content_type": "text/html",
+      "cache_control": "max-age=86400",
+      "compress": true
+    },
+    "css": {
+      "content_type": "text/css",
+      "cache_control": "max-age=31536000",
+      "compress": true
+    },
+    "js": {
+      "content_type": "application/javascript",
+      "cache_control": "max-age=31536000",
+      "compress": true
+    },
+    "images": {
+      "cache_control": "max-age=2592000",
+      "compress": false
+    },
+    "pdf": {
+      "content_type": "application/pdf",
+      "cache_control": "max-age=604800",
+      "compress": false
+    },
+    "fonts": {
+      "cache_control": "max-age=31536000",
+      "compress": false
+    }
+  },
+  "excluded_files": [
+    "*.DS_Store",
+    "*.gitkeep",
+    "Thumbs.db",
+    "*.tmp",
+    "*.log",
+    ".git/*",
+    "node_modules/*",
+    "*.md"
+  ],
+  "monitoring": {
+    "enable_cloudwatch_alarms": true,
+    "error_threshold": 5,
+    "latency_threshold": 3000
+  }
+}

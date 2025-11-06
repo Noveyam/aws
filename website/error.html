@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Page not found - [Your Name] Professional Resume Website">
+    <meta name="robots" content="noindex, nofollow">
+    
+    <title>Page Not Found - [Your Name] Resume</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+    
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="/css/styles.css">
+    
+    <style>
+        /* Additional styles specific to error page */
+        .error-page {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .error-container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .error-code {
+            font-size: 8rem;
+            font-weight: 700;
+            line-height: 1;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            opacity: 0.9;
+        }
+        
+        .error-title {
+            font-size: 2.5rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+        }
+        
+        .error-message {
+            font-size: 1.2rem;
+            line-height: 1.6;
+            margin-bottom: 40px;
+            opacity: 0.9;
+        }
+        
+        .error-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            align-items: center;
+        }
+        
+        .error-button {
+            display: inline-block;
+            padding: 15px 30px;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            text-decoration: none;
+            border-radius: 30px;
+            font-weight: 500;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(10px);
+        }
+        
+        .error-button:hover {
+            background: rgba(255, 255, 255, 0.3);
+            border-color: rgba(255, 255, 255, 0.5);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        }
+        
+        .error-button.primary {
+            background: white;
+            color: #667eea;
+            border-color: white;
+        }
+        
+        .error-button.primary:hover {
+            background: #f8f9fa;
+            color: #5a6fd8;
+        }
+        
+        .error-navigation {
+            margin-top: 40px;
+            padding-top: 30px;
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .error-nav-title {
+            font-size: 1.1rem;
+            margin-bottom: 20px;
+            opacity: 0.8;
+        }
+        
+        .error-nav-links {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+        }
+        
+        .error-nav-link {
+            color: white;
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+            font-size: 0.95rem;
+        }
+        
+        .error-nav-link:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-1px);
+        }
+        
+        .error-animation {
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .error-code {
+                font-size: 6rem;
+            }
+            
+            .error-title {
+                font-size: 2rem;
+            }
+            
+            .error-message {
+                font-size: 1.1rem;
+            }
+            
+            .error-actions {
+                gap: 12px;
+            }
+            
+            .error-button {
+                padding: 12px 24px;
+                font-size: 1rem;
+            }
+            
+            .error-nav-links {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .error-code {
+                font-size: 4rem;
+            }
+            
+            .error-title {
+                font-size: 1.5rem;
+            }
+            
+            .error-message {
+                font-size: 1rem;
+            }
+        }
+        
+        /* Accessibility */
+        @media (prefers-reduced-motion: reduce) {
+            .error-animation {
+                animation: none;
+            }
+            
+            .error-button,
+            .error-nav-link {
+                transition: none;
+            }
+        }
+        
+        /* High contrast mode */
+        @media (prefers-contrast: high) {
+            .error-page {
+                background: #000;
+            }
+            
+            .error-button {
+                border-color: white;
+                background: transparent;
+            }
+            
+            .error-button:hover {
+                background: white;
+                color: #000;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="error-page">
+        <div class="error-container">
+            <div class="error-animation">
+                <div class="error-code" aria-label="Error code 404">404</div>
+            </div>
+            
+            <h1 class="error-title">Oops! Page Not Found</h1>
+            
+            <p class="error-message">
+                The page you're looking for seems to have wandered off into the digital void. 
+                Don't worry though – my resume and all the important stuff are still here!
+            </p>
+            
+            <div class="error-actions">
+                <a href="/" class="error-button primary">
+                    🏠 Back to Home
+                </a>
+                <a href="mailto:[your-email]@example.com" class="error-button">
+                    📧 Contact Me
+                </a>
+            </div>
+            
+            <nav class="error-navigation" role="navigation" aria-label="Error page navigation">
+                <div class="error-nav-title">Quick Navigation:</div>
+                <div class="error-nav-links">
+                    <a href="https://noveycloud.com/#about" class="error-nav-link">About</a>
+                    <a href="https://noveycloud.com/#experience" class="error-nav-link">Experience</a>
+                    <a href="https://noveycloud.com/#skills" class="error-nav-link">Skills</a>
+                    <a href="https://noveycloud.com/#education" class="error-nav-link">Education</a>
+                    <a href="https://noveycloud.com/#projects" class="error-nav-link">Projects</a>
+                    <a href="https://noveycloud.com/#certifications" class="error-nav-link">Certifications</a>
+                    <a href="https://noveycloud.com/assets/resume.pdf" class="error-nav-link" download>📄 Resume PDF</a>
+                </div>
+            </nav>
+        </div>
+    </div>
+
+    <script>
+        // Simple analytics tracking for 404 errors (optional)
+        if (typeof gtag !== 'undefined') {
+            gtag('event', 'page_view', {
+                page_title: '404 Error',
+                page_location: window.location.href
+            });
+        }
+        
+        // Log 404 error for debugging (in development)
+        if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+            console.warn('404 Error - Page not found:', window.location.href);
+        }
+        
+        // Auto-redirect common typos (optional enhancement)
+        const currentPath = window.location.pathname.toLowerCase();
+        const redirects = {
+            '/home': '/',
+            '/index': '/',
+            '/resume': '/',
+            '/cv': '/',
+            '/about-me': '/#about',
+            '/contact': '/#about',
+            '/work': '/#experience',
+            '/portfolio': '/#projects'
+        };
+        
+        if (redirects[currentPath]) {
+            setTimeout(() => {
+                window.location.href = redirects[currentPath];
+            }, 3000); // Redirect after 3 seconds
+            
+            // Show redirect message
+            const redirectMessage = document.createElement('div');
+            redirectMessage.style.cssText = `
+                position: fixed;
+                bottom: 20px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: rgba(255, 255, 255, 0.9);
+                color: #333;
+                padding: 10px 20px;
+                border-radius: 25px;
+                font-size: 0.9rem;
+                backdrop-filter: blur(10px);
+                box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            `;
+            redirectMessage.textContent = `Redirecting to ${redirects[currentPath]} in 3 seconds...`;
+            document.body.appendChild(redirectMessage);
+        }
+        
+        // Keyboard navigation enhancement
+        document.addEventListener('keydown', function(e) {
+            // Press 'H' to go home
+            if (e.key.toLowerCase() === 'h' && !e.ctrlKey && !e.metaKey) {
+                window.location.href = '/';
+            }
+            // Press 'C' to contact
+            else if (e.key.toLowerCase() === 'c' && !e.ctrlKey && !e.metaKey) {
+                window.location.href = 'mailto:[your-email]@example.com';
+            }
+        });
+        
+        // Add keyboard shortcuts hint
+        const keyboardHint = document.createElement('div');
+        keyboardHint.style.cssText = `
+            position: fixed;
+            bottom: 10px;
+            right: 10px;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            opacity: 0.7;
+        `;
+        keyboardHint.innerHTML = 'Press <kbd>H</kbd> for Home, <kbd>C</kbd> for Contact';
+        keyboardHint.style.display = 'none';
+        document.body.appendChild(keyboardHint);
+        
+        // Show keyboard hint on first interaction
+        let hintShown = false;
+        document.addEventListener('keydown', function() {
+            if (!hintShown) {
+                keyboardHint.style.display = 'block';
+                setTimeout(() => {
+                    keyboardHint.style.opacity = '0';
+                    setTimeout(() => {
+                        keyboardHint.style.display = 'none';
+                    }, 300);
+                }, 3000);
+                hintShown = true;
+            }
+        }, { once: true });
+    </script>
+</body>
+</html>
