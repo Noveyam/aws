@@ -69,14 +69,16 @@ set_environment() {
 # Generated configuration for environment: $env
 # Generated at: $(date)
 
-domain_name = $(echo "$config" | jq -r '.domain_name')
-bucket_name = $(echo "$config" | jq -r '.bucket_name')
-aws_region = $(echo "$config" | jq -r '.aws_region')
-environment = $(echo "$config" | jq -r '.environment')
+domain_name            = "$(echo "$config" | jq -r '.domain_name')"
+bucket_name            = "$(echo "$config" | jq -r '.bucket_name')"
+aws_region             = "$(echo "$config" | jq -r '.aws_region')"
+environment            = "$(echo "$config" | jq -r '.environment')"
 create_deployment_user = $(echo "$config" | jq -r '.create_deployment_user')
-enable_health_check = $(echo "$config" | jq -r '.enable_health_check')
+enable_health_check    = $(echo "$config" | jq -r '.enable_health_check')
 
-tags = $(echo "$config" | jq '.tags')
+tags = {
+$(echo "$config" | jq -r '.tags | to_entries | map("  \"\(.key)\" = \"\(.value)\"") | join("\n")')
+}
 EOF
     
     success "Environment configuration set for: $env"
