@@ -17,6 +17,11 @@ on:
         - staging
         - prod
 
+permissions:
+  contents: read
+  security-events: write
+  actions: read
+
 env:
   AWS_REGION: us-east-1
   TERRAFORM_VERSION: 1.6.0
@@ -362,7 +367,7 @@ jobs:
     
     - name: Upload Trivy scan results
       continue-on-error: true
-      uses: github/codeql-action/upload-sarif@v3
+      uses: github/codeql-action/upload-sarif@v4
       if: always()
       with:
         sarif_file: 'trivy-results.sarif'
