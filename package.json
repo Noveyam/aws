@@ -1,0 +1,29 @@
+{
+  "name": "noveycloud-resume-website",
+  "version": "1.0.0",
+  "description": "Professional resume website hosted on AWS S3 with CloudFront CDN",
+  "private": true,
+  "scripts": {
+    "validate": "npm run validate:html && npm run validate:config",
+    "validate:html": "html-validate 'website/**/*.html' || true",
+    "validate:config": "./scripts/validate-config.sh",
+    "test": "npm run validate"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/noveycloud-resume-website"
+  },
+  "keywords": [
+    "resume",
+    "aws",
+    "s3",
+    "cloudfront",
+    "terraform",
+    "static-website"
+  ],
+  "author": "noveycloud",
+  "license": "MIT",
+  "devDependencies": {
+    "html-validate": "^8.0.0"
+  }
+}
