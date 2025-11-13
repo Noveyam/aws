@@ -239,8 +239,8 @@ main() {
     case "$action" in
         "deploy")
             check_prerequisites
-            validate_terraform
             init_terraform
+            validate_terraform
             plan_terraform
             
             # Ask for confirmation before applying
@@ -267,8 +267,8 @@ main() {
             ;;
         "plan")
             check_prerequisites
-            validate_terraform
             init_terraform
+            validate_terraform
             plan_terraform
             info "Plan completed. Run with 'deploy' to apply changes."
             ;;

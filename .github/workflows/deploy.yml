@@ -169,9 +169,14 @@ jobs:
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: ${{ env.AWS_REGION }}
     
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y jq bc
+    
     - name: Deploy to development
       run: |
-        chmod +x scripts/deploy-all.sh
+        chmod +x scripts/*.sh
         ./scripts/deploy-all.sh deploy dev
     
     - name: Run deployment tests
@@ -207,9 +212,14 @@ jobs:
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: ${{ env.AWS_REGION }}
     
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y jq bc
+    
     - name: Deploy to staging
       run: |
-        chmod +x scripts/deploy-all.sh
+        chmod +x scripts/*.sh
         ./scripts/deploy-all.sh deploy staging
     
     - name: Run staging tests
@@ -272,9 +282,14 @@ jobs:
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_PROD }}
         aws-region: ${{ env.AWS_REGION }}
     
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y jq bc
+    
     - name: Deploy to production
       run: |
-        chmod +x scripts/deploy-all.sh
+        chmod +x scripts/*.sh
         ENVIRONMENT="${{ github.event.inputs.environment || 'prod' }}"
         ./scripts/deploy-all.sh deploy "$ENVIRONMENT"
     
