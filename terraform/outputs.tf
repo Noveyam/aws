@@ -23,12 +23,12 @@ output "cloudfront_domain_name" {
 # Route53 outputs
 output "route53_zone_id" {
   description = "Zone ID of the Route53 hosted zone"
-  value       = aws_route53_zone.main.zone_id
+  value       = local.zone_id
 }
 
 output "route53_name_servers" {
   description = "Name servers for the Route53 hosted zone"
-  value       = aws_route53_zone.main.name_servers
+  value       = var.environment == "prod" ? aws_route53_zone.main[0].name_servers : data.aws_route53_zone.main.name_servers
 }
 
 # ACM certificate outputs

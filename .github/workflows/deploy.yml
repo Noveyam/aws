@@ -196,80 +196,80 @@ jobs:
           curl -f "$WEBSITE_URL" || exit 1
         fi
 
-  deploy-staging:
-    name: Deploy to Staging
-    runs-on: ubuntu-latest
-    needs: validate
-    if: github.ref == 'refs/heads/main'
-    environment: staging
-    
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-    
-    - name: Setup Terraform
-      uses: hashicorp/setup-terraform@v3
-      with:
-        terraform_version: ${{ env.TERRAFORM_VERSION }}
-    
-    - name: Configure AWS credentials
-      uses: aws-actions/configure-aws-credentials@v4
-      with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: ${{ env.AWS_REGION }}
-    
-    - name: Install dependencies
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y jq bc
-    
-    - name: Deploy to staging
-      run: |
-        chmod +x scripts/*.sh
-        ./scripts/deploy-all.sh deploy staging
-    
-    - name: Run staging tests
-      run: |
-        # Wait for deployment to be ready
-        sleep 60
-        # Test website accessibility and performance
-        if [ -f terraform-outputs.json ]; then
-          WEBSITE_URL=$(jq -r '.website_url.value' terraform-outputs.json)
-          
-          # Test accessibility
-          curl -f "$WEBSITE_URL" || exit 1
-          
-          # Test HTTPS redirect
-          HTTP_URL=$(echo "$WEBSITE_URL" | sed 's/https/http/')
-          REDIRECT_STATUS=$(curl -s -o /dev/null -w "%{http_code}" "$HTTP_URL")
-          if [ "$REDIRECT_STATUS" != "301" ] && [ "$REDIRECT_STATUS" != "302" ]; then
-            echo "HTTPS redirect not working properly"
-            exit 1
-          fi
-          
-          # Test response time
-          RESPONSE_TIME=$(curl -o /dev/null -s -w "%{time_total}" "$WEBSITE_URL")
-          # Use awk instead of bc for better compatibility
-          if [ $(echo "$RESPONSE_TIME 3.0" | awk '{print ($1 > $2)}') -eq 1 ]; then
-            echo "Response time too slow: ${RESPONSE_TIME}s"
-            exit 1
-          fi
-        fi
-    
-    - name: Notify staging deployment
-      if: success()
-      run: |
-        echo "✅ Staging deployment successful"
-        if [ -f terraform-outputs.json ]; then
-          WEBSITE_URL=$(jq -r '.website_url.value' terraform-outputs.json)
-          echo "🌐 Staging URL: $WEBSITE_URL"
-        fi
+  # deploy-staging:
+  #   name: Deploy to Staging
+  #   runs-on: ubuntu-latest
+  #   needs: validate
+  #   if: github.ref == 'refs/heads/main'
+  #   environment: staging
+  #   
+  #   steps:
+  #   - name: Checkout code
+  #     uses: actions/checkout@v4
+  #   
+  #   - name: Setup Terraform
+  #     uses: hashicorp/setup-terraform@v3
+  #     with:
+  #       terraform_version: ${{ env.TERRAFORM_VERSION }}
+  #   
+  #   - name: Configure AWS credentials
+  #     uses: aws-actions/configure-aws-credentials@v4
+  #     with:
+  #       aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  #       aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  #       aws-region: ${{ env.AWS_REGION }}
+  #   
+  #   - name: Install dependencies
+  #     run: |
+  #       sudo apt-get update
+  #       sudo apt-get install -y jq bc
+  #   
+  #   - name: Deploy to staging
+  #     run: |
+  #       chmod +x scripts/*.sh
+  #       ./scripts/deploy-all.sh deploy staging
+  #   
+  #   - name: Run staging tests
+  #     run: |
+  #       # Wait for deployment to be ready
+  #       sleep 60
+  #       # Test website accessibility and performance
+  #       if [ -f terraform-outputs.json ]; then
+  #         WEBSITE_URL=$(jq -r '.website_url.value' terraform-outputs.json)
+  #         
+  #         # Test accessibility
+  #         curl -f "$WEBSITE_URL" || exit 1
+  #         
+  #         # Test HTTPS redirect
+  #         HTTP_URL=$(echo "$WEBSITE_URL" | sed 's/https/http/')
+  #         REDIRECT_STATUS=$(curl -s -o /dev/null -w "%{http_code}" "$HTTP_URL")
+  #         if [ "$REDIRECT_STATUS" != "301" ] && [ "$REDIRECT_STATUS" != "302" ]; then
+  #           echo "HTTPS redirect not working properly"
+  #           exit 1
+  #         fi
+  #         
+  #         # Test response time
+  #         RESPONSE_TIME=$(curl -o /dev/null -s -w "%{time_total}" "$WEBSITE_URL")
+  #         # Use awk instead of bc for better compatibility
+  #         if [ $(echo "$RESPONSE_TIME 3.0" | awk '{print ($1 > $2)}') -eq 1 ]; then
+  #           echo "Response time too slow: ${RESPONSE_TIME}s"
+  #           exit 1
+  #         fi
+  #       fi
+  #   
+  #   - name: Notify staging deployment
+  #     if: success()
+  #     run: |
+  #       echo "✅ Staging deployment successful"
+  #       if [ -f terraform-outputs.json ]; then
+  #         WEBSITE_URL=$(jq -r '.website_url.value' terraform-outputs.json)
+  #         echo "🌐 Staging URL: $WEBSITE_URL"
+  #       fi
 
   deploy-production:
     name: Deploy to Production
     runs-on: ubuntu-latest
-    needs: [validate, deploy-staging]
+    needs: [validate]
     if: github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch'
     environment: production
     

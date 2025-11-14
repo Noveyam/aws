@@ -1,6 +1,14 @@
 # Data source to get current AWS account ID
 data "aws_caller_identity" "current" {}
 
+# Local variables
+locals {
+  # For staging/dev, use the base domain zone (noveycloud.com)
+  # For prod, use the zone we create/manage
+  base_domain = var.environment == "prod" ? var.domain_name : replace(var.domain_name, "/^[^.]+\\./", "")
+  zone_id     = var.environment == "prod" ? aws_route53_zone.main[0].zone_id : data.aws_route53_zone.main.zone_id
+}
+
 # S3 bucket for static website hosting
 resource "aws_s3_bucket" "resume_website" {
   bucket = var.bucket_name
@@ -142,9 +150,22 @@ resource "aws_s3_bucket_notification" "resume_website" {
 }
 
 # Route53 hosted zone
+# Use existing Route53 zone for the base domain
+# For staging/dev, we'll create records in the main zone instead of separate zones
+data "aws_route53_zone" "main" {
+  name         = var.environment == "prod" ? var.domain_name : replace(var.domain_name, "/^[^.]+\\./", "")
+  private_zone = false
+}
+
+# Only create a new zone if this is production and it doesn't exist
 resource "aws_route53_zone" "main" {
-  name = var.domain_name
-  tags = var.tags
+  count = var.environment == "prod" ? 1 : 0
+  name  = var.domain_name
+  tags  = var.tags
+
+  lifecycle {
+    prevent_destroy = true
+  }
 }
 
 # ACM certificate for SSL/TLS
@@ -176,7 +197,7 @@ resource "aws_route53_record" "cert_validation" {
   records         = [each.value.record]
   ttl             = 60
   type            = each.value.type
-  zone_id         = aws_route53_zone.main.zone_id
+  zone_id         = local.zone_id
 }
 
 # ACM certificate validation
@@ -374,7 +395,7 @@ resource "aws_cloudfront_distribution" "resume_website" {
 
 # Route53 A record for apex domain
 resource "aws_route53_record" "apex" {
-  zone_id = aws_route53_zone.main.zone_id
+  zone_id = local.zone_id
   name    = var.domain_name
   type    = "A"
 
@@ -387,7 +408,7 @@ resource "aws_route53_record" "apex" {
 
 # Route53 A record for www subdomain
 resource "aws_route53_record" "www" {
-  zone_id = aws_route53_zone.main.zone_id
+  zone_id = local.zone_id
   name    = "www.${var.domain_name}"
   type    = "A"
 
@@ -400,7 +421,7 @@ resource "aws_route53_record" "www" {
 
 # Route53 AAAA records for IPv6 support
 resource "aws_route53_record" "apex_ipv6" {
-  zone_id = aws_route53_zone.main.zone_id
+  zone_id = local.zone_id
   name    = var.domain_name
   type    = "AAAA"
 
@@ -412,7 +433,7 @@ resource "aws_route53_record" "apex_ipv6" {
 }
 
 resource "aws_route53_record" "www_ipv6" {
-  zone_id = aws_route53_zone.main.zone_id
+  zone_id = local.zone_id
   name    = "www.${var.domain_name}"
   type    = "AAAA"
 
