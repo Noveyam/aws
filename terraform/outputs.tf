@@ -28,7 +28,7 @@ output "route53_zone_id" {
 
 output "route53_name_servers" {
   description = "Name servers for the Route53 hosted zone"
-  value       = var.environment == "prod" ? aws_route53_zone.main[0].name_servers : data.aws_route53_zone.main.name_servers
+  value       = aws_route53_zone.main.name_servers
 }
 
 # ACM certificate outputs

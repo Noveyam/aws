@@ -4,15 +4,19 @@ data "aws_caller_identity" "current" {}
 # Local variables
 locals {
   # For staging/dev, use the base domain zone (noveycloud.com)
-  # For prod, use the zone we create/manage
-  base_domain = var.environment == "prod" ? var.domain_name : replace(var.domain_name, "/^[^.]+\\./", "")
-  zone_id     = var.environment == "prod" ? aws_route53_zone.main[0].zone_id : data.aws_route53_zone.main.zone_id
+  # Use the zone we create/manage
+  base_domain = var.domain_name
+  zone_id     = aws_route53_zone.main.zone_id
 }
 
 # S3 bucket for static website hosting
 resource "aws_s3_bucket" "resume_website" {
   bucket = var.bucket_name
   tags   = var.tags
+
+  lifecycle {
+    prevent_destroy = true
+  }
 }
 
 # S3 bucket server-side encryption
@@ -150,18 +154,11 @@ resource "aws_s3_bucket_notification" "resume_website" {
 }
 
 # Route53 hosted zone
-# Use existing Route53 zone for the base domain
-# For staging/dev, we'll create records in the main zone instead of separate zones
-data "aws_route53_zone" "main" {
-  name         = var.environment == "prod" ? var.domain_name : replace(var.domain_name, "/^[^.]+\\./", "")
-  private_zone = false
-}
-
-# Only create a new zone if this is production and it doesn't exist
+# Create or use existing zone
+# Zone ID: Z0756127155MZ0VTLU0BJ (Production - DO NOT DELETE)
 resource "aws_route53_zone" "main" {
-  count = var.environment == "prod" ? 1 : 0
-  name  = var.domain_name
-  tags  = var.tags
+  name = var.domain_name
+  tags = var.tags
 
   lifecycle {
     prevent_destroy = true
