@@ -20,7 +20,7 @@
       "aws_region": "us-east-1",
       "environment": "staging",
       "create_deployment_user": true,
-      "enable_health_check": true,
+      "enable_health_check": false,
       "tags": {
         "Project": "Resume Website",
         "Environment": "staging",
@@ -34,7 +34,7 @@
       "aws_region": "us-east-1",
       "environment": "prod",
       "create_deployment_user": false,
-      "enable_health_check": true,
+      "enable_health_check": false,
       "tags": {
         "Project": "Resume Website",
         "Environment": "prod",

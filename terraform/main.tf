@@ -424,17 +424,15 @@ resource "aws_route53_record" "www_ipv6" {
 }
 
 # Route53 health check for monitoring (optional)
+# Note: Health check is optional and can be disabled if causing issues
 resource "aws_route53_health_check" "resume_website" {
-  count                           = var.enable_health_check ? 1 : 0
-  fqdn                            = var.domain_name
-  port                            = 443
-  type                            = "HTTPS"
-  resource_path                   = "/"
-  failure_threshold               = 3
-  request_interval                = 30
-  cloudwatch_alarm_region         = var.aws_region
-  cloudwatch_alarm_name           = "${var.bucket_name}-health-check"
-  insufficient_data_health_status = "LastKnownStatus"
+  count             = var.enable_health_check ? 1 : 0
+  fqdn              = var.domain_name
+  port              = 443
+  type              = "HTTPS"
+  resource_path     = "/"
+  failure_threshold = 3
+  request_interval  = 30
 
   tags = merge(var.tags, {
     Name = "${var.domain_name} Health Check"

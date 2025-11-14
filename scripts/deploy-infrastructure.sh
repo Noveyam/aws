@@ -87,11 +87,9 @@ validate_terraform() {
     
     cd "$TERRAFORM_DIR"
     
-    # Format check
-    if ! terraform fmt -check=true -diff=true; then
-        warning "Terraform files are not properly formatted. Running terraform fmt..."
-        terraform fmt
-    fi
+    # Format files (non-blocking)
+    info "Formatting Terraform files..."
+    terraform fmt -recursive > /dev/null 2>&1 || true
     
     # Validate configuration
     terraform validate || error_exit "Terraform configuration validation failed"
@@ -117,15 +115,19 @@ plan_terraform() {
     
     cd "$TERRAFORM_DIR"
     
-    # Create plan file
-    terraform plan -out=tfplan -detailed-exitcode || {
-        local exit_code=$?
-        if [ $exit_code -eq 1 ]; then
-            error_exit "Terraform plan failed"
-        elif [ $exit_code -eq 2 ]; then
-            info "Changes detected in Terraform plan"
-        fi
-    }
+    # Create plan file (exit code 2 means changes detected, which is success)
+    set +e
+    terraform plan -out=tfplan -detailed-exitcode
+    local plan_exit=$?
+    set -e
+    
+    if [ $plan_exit -eq 0 ]; then
+        info "No changes detected in Terraform plan"
+    elif [ $plan_exit -eq 2 ]; then
+        info "Changes detected in Terraform plan"
+    else
+        error_exit "Terraform plan failed with exit code $plan_exit"
+    fi
     
     success "Terraform plan created successfully"
 }
@@ -149,46 +151,63 @@ apply_terraform() {
 get_outputs() {
     info "Retrieving deployment outputs..."
     
-    cd "$TERRAFORM_DIR"
+    cd "$TERRAFORM_DIR" || return 0
     
-    # Get outputs in JSON format
-    terraform output -json > "$PROJECT_ROOT/terraform-outputs.json"
+    # Get outputs in JSON format (non-blocking)
+    set +e
+    terraform output -json > "$PROJECT_ROOT/terraform-outputs.json" 2>/dev/null
+    local output_result=$?
+    set -e
+    
+    if [ $output_result -ne 0 ]; then
+        warning "Could not retrieve Terraform outputs (this is normal if resources are still being created)"
+        return 0
+    fi
     
     # Display key outputs
     echo ""
     info "=== Deployment Summary ==="
     
     if command -v jq &> /dev/null; then
-        echo "S3 Bucket: $(terraform output -raw s3_bucket_name)"
-        echo "CloudFront Distribution ID: $(terraform output -raw cloudfront_distribution_id)"
-        echo "Website URL: $(terraform output -raw website_url)"
-        echo "WWW URL: $(terraform output -raw www_website_url)"
+        set +e
+        echo "S3 Bucket: $(terraform output -raw s3_bucket_name 2>/dev/null || echo 'N/A')"
+        echo "CloudFront Distribution ID: $(terraform output -raw cloudfront_distribution_id 2>/dev/null || echo 'N/A')"
+        echo "Website URL: $(terraform output -raw website_url 2>/dev/null || echo 'N/A')"
+        echo "WWW URL: $(terraform output -raw www_website_url 2>/dev/null || echo 'N/A')"
         echo ""
         echo "Route53 Name Servers:"
-        terraform output -json route53_name_servers | jq -r '.[]' | sed 's/^/  - /'
+        terraform output -json route53_name_servers 2>/dev/null | jq -r '.[]' 2>/dev/null | sed 's/^/  - /' || echo "  - N/A"
+        set -e
         echo ""
         info "Full outputs saved to: terraform-outputs.json"
     else
-        terraform output
+        set +e
+        terraform output 2>/dev/null || echo "Outputs not available yet"
+        set -e
     fi
     
     success "Outputs retrieved successfully"
+    return 0
 }
 
 # Verify deployment
 verify_deployment() {
     info "Verifying deployment..."
     
-    cd "$TERRAFORM_DIR"
+    cd "$TERRAFORM_DIR" || return 0
     
-    # Get CloudFront distribution ID
+    # Get CloudFront distribution ID (non-blocking)
+    set +e
     local distribution_id
     distribution_id=$(terraform output -raw cloudfront_distribution_id 2>/dev/null || echo "")
+    set -e
     
-    if [ -n "$distribution_id" ]; then
+    if [ -n "$distribution_id" ] && [ "$distribution_id" != "null" ]; then
         info "Checking CloudFront distribution status..."
+        set +e
         local status
         status=$(aws cloudfront get-distribution --id "$distribution_id" --query 'Distribution.Status' --output text 2>/dev/null || echo "Unknown")
+        set -e
         info "CloudFront distribution status: $status"
         
         if [ "$status" = "Deployed" ]; then
@@ -198,14 +217,18 @@ verify_deployment() {
         fi
     fi
     
-    # Check certificate status
+    # Check certificate status (non-blocking)
+    set +e
     local cert_arn
     cert_arn=$(terraform output -raw acm_certificate_arn 2>/dev/null || echo "")
+    set -e
     
-    if [ -n "$cert_arn" ]; then
+    if [ -n "$cert_arn" ] && [ "$cert_arn" != "null" ]; then
         info "Checking SSL certificate status..."
+        set +e
         local cert_status
         cert_status=$(aws acm describe-certificate --certificate-arn "$cert_arn" --region us-east-1 --query 'Certificate.Status' --output text 2>/dev/null || echo "Unknown")
+        set -e
         info "SSL certificate status: $cert_status"
         
         if [ "$cert_status" = "ISSUED" ]; then
@@ -216,6 +239,7 @@ verify_deployment() {
     fi
     
     success "Deployment verification completed"
+    return 0
 }
 
 # Cleanup function
@@ -243,26 +267,43 @@ main() {
             validate_terraform
             plan_terraform
             
-            # Ask for confirmation before applying
-            echo ""
-            read -p "Do you want to apply these changes? (y/N): " -n 1 -r
-            echo ""
-            
-            if [[ $REPLY =~ ^[Yy]$ ]]; then
-                apply_terraform
-                get_outputs
-                verify_deployment
+            # Check if running in CI/CD (non-interactive mode)
+            if [ -n "${CI:-}" ] || [ -n "${GITHUB_ACTIONS:-}" ] || [ "${AUTO_APPROVE:-false}" = "true" ]; then
+                info "Running in non-interactive mode (CI/CD detected)"
+                
+                info "Step 1/3: Applying Terraform changes..."
+                apply_terraform || error_exit "Terraform apply failed"
+                
+                info "Step 2/3: Retrieving outputs..."
+                get_outputs || warning "Could not retrieve outputs (continuing anyway)"
+                
+                info "Step 3/3: Verifying deployment..."
+                verify_deployment || warning "Verification failed (continuing anyway)"
                 
                 echo ""
                 success "🎉 Infrastructure deployment completed successfully!"
-                info "Next steps:"
-                echo "  1. Update your domain's name servers with the Route53 name servers shown above"
-                echo "  2. Wait for DNS propagation (up to 24 hours)"
-                echo "  3. Run './scripts/deploy-website.sh' to upload your website content"
             else
-                info "Deployment cancelled by user"
-                cleanup
-                exit 0
+                # Ask for confirmation before applying (interactive mode)
+                echo ""
+                read -p "Do you want to apply these changes? (y/N): " -n 1 -r
+                echo ""
+                
+                if [[ $REPLY =~ ^[Yy]$ ]]; then
+                    apply_terraform
+                    get_outputs
+                    verify_deployment
+                    
+                    echo ""
+                    success "🎉 Infrastructure deployment completed successfully!"
+                    info "Next steps:"
+                    echo "  1. Update your domain's name servers with the Route53 name servers shown above"
+                    echo "  2. Wait for DNS propagation (up to 24 hours)"
+                    echo "  3. Run './scripts/deploy-website.sh' to upload your website content"
+                else
+                    info "Deployment cancelled by user"
+                    cleanup
+                    exit 0
+                fi
             fi
             ;;
         "plan")

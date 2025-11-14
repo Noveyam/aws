@@ -266,7 +266,11 @@ main() {
         "deploy")
             local env="${2:-}"
             if [ -n "$env" ]; then
-                "$SCRIPT_DIR/manage-environment.sh" set "$env"
+                info "Setting environment to: $env"
+                if ! "$SCRIPT_DIR/manage-environment.sh" set "$env"; then
+                    error_exit "Failed to set environment to $env"
+                fi
+                success "Environment set to: $env"
             fi
             deploy_infrastructure
             deploy_website
